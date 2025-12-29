@@ -7,6 +7,7 @@ import cors from "cors";
 import express from "express";
 import { isHttpError } from "http-errors";
 import taskRoutes from "src/routes/task";
+import tasksRoutes from "src/routes/tasks"; // add this line
 
 import type { NextFunction, Request, Response } from "express";
 
@@ -50,5 +51,8 @@ app.use((error: unknown, req: Request, res: Response, _next: NextFunction) => {
 
   res.status(statusCode).json({ error: errorMessage });
 });
+
+app.use("/api/task", taskRoutes);
+app.use("/api/tasks", tasksRoutes); // add this line
 
 export default app;
