@@ -28,6 +28,7 @@ app.use(
 );
 
 app.use("/api/task", taskRoutes);
+app.use("/api/tasks", tasksRoutes); // add this line
 
 /**
  * Error handler; all errors thrown by server are handled here.
@@ -51,8 +52,5 @@ app.use((error: unknown, req: Request, res: Response, _next: NextFunction) => {
 
   res.status(statusCode).json({ error: errorMessage });
 });
-
-app.use("/api/task", taskRoutes);
-app.use("/api/tasks", tasksRoutes); // add this line
 
 export default app;

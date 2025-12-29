@@ -1,0 +1,18 @@
+.title {
+  font: var(--font-heading);
+}
+
+.itemContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  width: 100%;
+}
+
+.listContainer {
+  margin-top: 3rem;
+}
+
+.errorModalText {
+  color: var(--color-tse-navy-blue);
+}
