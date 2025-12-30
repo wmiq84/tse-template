@@ -25,14 +25,16 @@ export function TaskList({ title }: TaskListProps) {
   }, []);
 
   return (
-    <div className={styles.listContainer}>
-      <span className={styles.title}>{title}</span>
-      <div className={styles.itemContainer}>
-        {tasks.length === 0 ? (
-          <p>No tasks yet. Add one above to get started.</p>
-        ) : (
-          tasks.map((task) => <TaskItem key={task._id} task={task}></TaskItem>)
-        )}
+    <div>
+      <div className={styles.listContainer}>
+        <span className={styles.title}>{title}</span>
+        <div className={styles.itemContainer}>
+          {tasks.length === 0 ? (
+            <p>No tasks yet. Add one above to get started.</p>
+          ) : (
+            tasks.map((task) => <TaskItem key={task._id} task={task}></TaskItem>)
+          )}
+        </div>
       </div>
       <Dialog
         styleVersion="styled"
