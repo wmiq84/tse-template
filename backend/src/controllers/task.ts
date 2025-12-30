@@ -4,6 +4,7 @@
 
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
+import { Model } from "mongoose";
 import TaskModel from "src/models/task";
 import validationErrorParser from "src/util/validationErrorParser";
 
@@ -86,6 +87,46 @@ export const removeTask: RequestHandler = async (req, res, next) => {
     const result = await TaskModel.deleteOne({ _id: id });
 
     res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+type UpdateTaskBody = {
+  _id: string;
+  title: string;
+  description?: string;
+  isChecked?: boolean;
+};
+
+export const updateTask: RequestHandler = async (req, res, next) => {
+  const errors = validationResult(req);
+  const { _id, title, description, isChecked } = req.body as UpdateTaskBody;
+  const { id } = req.params;
+
+  try {
+    // if there are errors, then this function throws an exception
+    validationErrorParser(errors);
+
+    if (id !== _id) {
+      return res.status(400).json({ error: "Incorrect ID" });
+    }
+
+    const task = await TaskModel.findByIdAndUpdate(
+      id,
+      {
+        title,
+        description,
+        isChecked,
+      },
+      { new: true },
+    );
+
+    if (task == null) {
+      return res.status(404).json({ error: "Invalid ID" });
+    } else {
+      res.status(200).json(task);
+    }
   } catch (error) {
     next(error);
   }
