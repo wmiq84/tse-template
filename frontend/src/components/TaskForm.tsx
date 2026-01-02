@@ -50,7 +50,7 @@ export function TaskForm({ mode, task, onSubmit }: TaskFormProps) {
   const [errorModalMessage, setErrorModalMessage] = useState<string | null>(null);
 
   const [assignee, setAssignee] = useState<string>(task?.assignee?._id ?? "");
-  const normalizedAssignee = assignee.trim().length === 24 ? assignee.trim() : undefined;
+  const normalizedAssignee = assignee.trim().length === 24 ? assignee.trim() : "";
 
   const handleSubmit = () => {
     setErrors({});
