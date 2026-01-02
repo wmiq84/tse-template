@@ -1,6 +1,6 @@
 import { Dialog } from "@tritonse/tse-constellation";
 import { useState } from "react";
-import { createTask } from "src/api/tasks";
+import { createTask, updateTask } from "src/api/tasks";
 import { Button, TextField } from "src/components";
 import styles from "src/components/TaskForm.module.css";
 
@@ -49,36 +49,57 @@ export function TaskForm({ mode, task, onSubmit }: TaskFormProps) {
   // If it's non-null, there is an error, so we should display that error to the user.
   const [errorModalMessage, setErrorModalMessage] = useState<string | null>(null);
 
+  const [assignee, setAssignee] = useState<string>(task?.assignee?._id ?? "");
+  const normalizedAssignee = assignee.trim().length === 24 ? assignee.trim() : "";
+
   const handleSubmit = () => {
-    // first, do any validation that we can on the frontend
     setErrors({});
     if (title.length === 0) {
       setErrors({ title: true });
       return;
     }
+
     setLoading(true);
-    createTask({ title, description })
-      .then((result) => {
-        if (result.success) {
-          // clear the form
-          setTitle("");
-          setDescription("");
-          // only call onSubmit if it's NOT undefined
-          if (onSubmit) onSubmit(result.data);
-        } else {
-          // You should always clearly inform the user when something goes wrong.
-          // In this case, we're using the Constellation `Dialog` component to show a popup.
-          // For errors, you generally want to show some kind of error state or notification
-          // within your UI. If the problem is with the user's input, then use
-          // the error states of your smaller components (like the `TextField`s).
-          // If the problem is something we don't really control, such as network
-          // issues or an unexpected exception on the server side, then use a
-          // banner, modal, popup, or similar.
-          setErrorModalMessage(result.error);
-        }
-        setLoading(false);
+
+    if (mode === "create") {
+      createTask({
+        title,
+        description,
+        assignee: normalizedAssignee,
       })
-      .catch(setErrorModalMessage);
+        .then((result) => {
+          if (result.success) {
+            setTitle("");
+            setDescription("");
+            setAssignee("");
+            if (onSubmit) onSubmit(result.data);
+          } else {
+            setErrorModalMessage(result.error);
+          }
+          setLoading(false);
+        })
+        .catch(setErrorModalMessage);
+    } else {
+      if (!task) return;
+
+      updateTask({
+        _id: task._id,
+        title,
+        description,
+        isChecked: task.isChecked,
+        dateCreated: task.dateCreated,
+        assignee: normalizedAssignee,
+      })
+        .then((result) => {
+          if (result.success) {
+            if (onSubmit) onSubmit(result.data);
+          } else {
+            setErrorModalMessage(result.error);
+          }
+          setLoading(false);
+        })
+        .catch(setErrorModalMessage);
+    }
   };
 
   const formTitle = mode === "create" ? "New task" : "Edit task";
@@ -110,6 +131,15 @@ export function TaskForm({ mode, task, onSubmit }: TaskFormProps) {
         />
         {/* set `type="primary"` on the button so the browser doesn't try to
         handle it specially (because it's inside a `<form>`) */}
+      </div>
+      <div className={styles.formRow}>
+        <TextField
+          className={styles.textField}
+          label="Assignee ID (optional)"
+          value={assignee}
+          onChange={(event) => setAssignee(event.target.value)}
+        />
+
         <Button
           kind="primary"
           data-testid="task-save-button"
@@ -118,6 +148,7 @@ export function TaskForm({ mode, task, onSubmit }: TaskFormProps) {
           onClick={handleSubmit}
         />
       </div>
+
       {/* Use the Constellation Dialog component to display an error message if there's an error 
       See the docs (https://tritonse.github.io/TSE-Constellation/?path=/docs/organisms-dialog--documentation)
       for a demo and more info on the prop types  */}

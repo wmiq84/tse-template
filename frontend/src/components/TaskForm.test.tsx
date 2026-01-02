@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { createTask } from "src/api/tasks";
+import { createTask, updateTask } from "src/api/tasks";
 import { TaskForm } from "src/components/TaskForm";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -23,18 +23,8 @@ const SAVE_BUTTON_ID = "task-save-button";
  * modules.
  */
 vi.mock("src/api/tasks", () => ({
-  /**
-   * Some of our tests will verify that `TaskForm` calls the correct functions
-   * when the user takes certain actions, like clicking the Save button. This mock
-   * function replaces `createTask` from `src/api/tasks` so we can (1) check
-   * whether that API function gets called and (2) prevent our test from trying to
-   * send an actual HTTP request. Because we know how `createTask` is used in the
-   * `TaskForm`, it's safe to just make this mock return `{ success: true }`--we
-   * don't need to rewrite a full implementation unless that's required.
-   *
-   * See https://vitest.dev/guide/mocking#functions for more info about mock functions.
-   */
   createTask: vi.fn(async (_params: CreateTaskRequest) => Promise.resolve({ success: true })),
+  updateTask: vi.fn(async (_params: Task) => Promise.resolve({ success: true })),
 }));
 
 /**
@@ -133,11 +123,16 @@ describe("taskForm", () => {
     });
     const saveButton = screen.getByTestId(SAVE_BUTTON_ID);
     fireEvent.click(saveButton);
-    expect(createTask).toHaveBeenCalledTimes(1);
-    expect(createTask).toHaveBeenCalledWith({
+    expect(updateTask).toHaveBeenCalledTimes(1);
+    expect(updateTask).toHaveBeenCalledWith({
+      _id: mockTask._id,
       title: "Updated title",
       description: "Updated description",
+      isChecked: mockTask.isChecked,
+      dateCreated: mockTask.dateCreated,
+      assignee: "",
     });
+
     await waitFor(() => {
       // If the test ends before all state updates and rerenders occur, we'll
       // get a warning about updates not being wrapped in an `act(...)`

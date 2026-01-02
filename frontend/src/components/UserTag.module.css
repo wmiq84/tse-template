@@ -1,0 +1,22 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.name {
+  font: var(--font-body);
+}
+
+.notAssigned {
+  font: var(--font-body);
+  color: var(--color-text-secondary);
+}

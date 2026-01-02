@@ -36,3 +36,16 @@
 .checked {
   color: var(--color-text-secondary);
 }
+.title {
+  font: var(--font-label);
+  color: inherit;
+  text-decoration: none;
+}
+
+.title:hover {
+  text-decoration: underline;
+}
+
+.item:hover {
+  background-color: var(--color-surface);
+}
