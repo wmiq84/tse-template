@@ -1,5 +1,6 @@
 import { Dialog } from "@tritonse/tse-constellation";
 import React, { useState } from "react"; // update this line
+import { Link } from "react-router-dom";
 import { type Task, updateTask } from "src/api/tasks";
 import { CheckButton } from "src/components";
 import styles from "src/components/TaskItem.module.css";
@@ -16,7 +17,11 @@ export function TaskItem({ task: initialTask }: TaskItemProps) {
   const handleToggleCheck = () => {
     setLoading(true);
 
-    const updatedTask = { ...task, isChecked: !task.isChecked };
+    const updatedTask = {
+      ...task,
+      isChecked: !task.isChecked,
+      assignee: task.assignee?._id,
+    };
 
     updateTask(updatedTask)
       .then((result) => {
@@ -48,7 +53,10 @@ export function TaskItem({ task: initialTask }: TaskItemProps) {
           ></CheckButton>
         }
         <div className={containerClass}>
-          <span className={styles.title}>{task.title}</span>
+          <Link to={`/task/${task._id}`} className={styles.title}>
+            {task.title}
+          </Link>
+
           {task.description && <span className={styles.description}>{task.description}</span>}
         </div>
       </div>
