@@ -2,7 +2,7 @@ import { Dialog } from "@tritonse/tse-constellation";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getTask } from "src/api/tasks";
-import { Page, TaskForm, TaskList } from "src/components";
+import { Page, TaskForm, TaskList, UserTag } from "src/components";
 
 import styles from "./TaskDetail.module.css";
 
@@ -11,6 +11,7 @@ import type { Task } from "src/api/tasks";
 export function TaskDetail() {
   const [task, setTask] = useState<Task | null>();
   const [errorModalMessage, setErrorModalMessage] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const params = useParams();
   const taskID = params.id;
@@ -40,11 +41,13 @@ export function TaskDetail() {
 
         {task === null && <h2 className={styles.notFound}>This task doesn't exist!</h2>}
 
-        {task && (
+        {task && !isEditing && (
           <>
             <div className={styles.headerRow}>
               <h2 className={styles.title}>{task.title}</h2>
-              <button className={styles.editButton}>Edit task</button>
+              <button className={styles.editButton} onClick={() => setIsEditing(true)}>
+                Edit task
+              </button>
             </div>
 
             <p className={styles.section}>
@@ -55,7 +58,7 @@ export function TaskDetail() {
 
             <p className={styles.section}>
               <span className={styles.label}>Assignee</span>
-              {task.assignee ? task.assignee.name : "Not assigned"}
+              <UserTag user={task.assignee} />
             </p>
 
             <p className={styles.section}>
@@ -68,6 +71,17 @@ export function TaskDetail() {
               {task.dateCreated.toLocaleString()}
             </p>
           </>
+        )}
+
+        {task && isEditing && (
+          <TaskForm
+            mode="edit"
+            task={task}
+            onSubmit={(updatedTask) => {
+              setTask(updatedTask);
+              setIsEditing(false);
+            }}
+          />
         )}
       </div>
     </Page>

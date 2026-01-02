@@ -50,6 +50,7 @@ export function TaskForm({ mode, task, onSubmit }: TaskFormProps) {
   const [errorModalMessage, setErrorModalMessage] = useState<string | null>(null);
 
   const [assignee, setAssignee] = useState<string>(task?.assignee?._id ?? "");
+  const normalizedAssignee = assignee.trim().length === 24 ? assignee.trim() : undefined;
 
   const handleSubmit = () => {
     setErrors({});
@@ -61,7 +62,11 @@ export function TaskForm({ mode, task, onSubmit }: TaskFormProps) {
     setLoading(true);
 
     if (mode === "create") {
-      createTask({ title, description, assignee })
+      createTask({
+        title,
+        description,
+        assignee: normalizedAssignee,
+      })
         .then((result) => {
           if (result.success) {
             setTitle("");
@@ -83,7 +88,7 @@ export function TaskForm({ mode, task, onSubmit }: TaskFormProps) {
         description,
         isChecked: task.isChecked,
         dateCreated: task.dateCreated,
-        assignee,
+        assignee: normalizedAssignee,
       })
         .then((result) => {
           if (result.success) {
