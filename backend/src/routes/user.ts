@@ -14,6 +14,7 @@ const router = express.Router();
  * request should be sent through or an error should be thrown.
  */
 router.post("/", UserValidator.createUser, UserController.createUser);
+router.get("/:id", UserController.getUser);
 // router.delete("/:id", TaskController.removeTask);
 // router.put("/:id", TaskController.updateTask);
 

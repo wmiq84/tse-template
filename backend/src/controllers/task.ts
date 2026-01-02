@@ -4,7 +4,7 @@
 
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
-import { Model } from "mongoose";
+// import { Model } from "mongoose";
 import TaskModel from "src/models/task";
 import validationErrorParser from "src/util/validationErrorParser";
 
